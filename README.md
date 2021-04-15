@@ -1,6 +1,6 @@
 ## Laboratório DevOps
 
-[![Build Status](https://travis-ci.com/kelwinmiranda/devopslab.svg?branch=main)](https://travis-ci.com/kelwinmiranda/devopslasi)
+[![Build Status](https://travis-ci.com/kelwinmirandaa/devopslab.svg?branch=main)](https://travis-ci.com/kelwinmirandaa/devopslab)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=kelwinmiranda&metric=alert_status)](https://sonarcloud.io/dashboard?id=kelwinmiranda)
 
