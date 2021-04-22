@@ -5,36 +5,38 @@ language: python
 python:                                                                                                                                                                                                  
   - "3.7.9"                                                                                                                                                                                              
 
-os:
-   - "Linux"
+os: linux
+dist: xenial
 
-dist:
-     - "xenial"
+jobs:
+  include:
+    - stage: Build
 
-addons:
-     sonarcloud:
-         organization: kelwinmirandaa
-         token: ${SONAR_TOKEN}
+      name: "Testes Unitarios"
+      # Instalação de Módulos que são necessários para a Aplicação.
+      install:
+        - pip install flask flask-wtf coverage
+      script:  # Defini o script de Teste que deve rodar toda vez que o código for alterado.
+        - coverage run test.py || travis_terminate 1;
+        - coverage report app.py || travis_terminate 1;
+        - coverage xml app.py || travis_terminate 1;
 
-# Defini o script de Teste que deve rodar toda vez que o código for alterado.                                                                                                                            
-script:                                                                                                                                                                                                  
-  - coverage run test.py || travis_terminate 1;
-  - coverage report app.py || travis_terminate 1;
-  - coverage xml app.py || travis_terminate 1;
-  - sonar-scanner || travis_terminate 1;
+    - script:
+        - sonar-scanner || travis_terminate 1;
+      name: "Testes de Qualidade e Seguranca"
+      addons:
+        sonarcloud:
+          organization: kelwinmirandaa
+          token: ${SONAR_TOKEN}
 
-# Instalação de Módulos que são necessários para a Aplicação.                                                                                                                                            
-install:                                                                                                                                                                                                                                                                                    
-  - pip install flask flask-wtf coverage
-
-# Defini o script de Teste que deve rodar toda vez que o código for alterado.
-
-deploy:
-  provider: heroku
-  strategy: api
-  api_key: $HEROKU_API_KEY
-  edge: true 
-  app: devopslab-kelwin
-  on:
-      branch: main
-
+    - stage: Deploy
+      script: skip
+      # Definir o Deploy no Heroku
+      deploy:
+        provider: heroku
+        strategy: api
+        api_key: $HEROKU_API_KEY
+        edge: true
+        app: devopslab-kelwin
+        on:
+ 
