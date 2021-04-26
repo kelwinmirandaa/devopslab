@@ -20,16 +20,39 @@ jobs:
         - coverage run test.py || travis_terminate 1;
         - coverage report app.py || travis_terminate 1;
         - coverage xml app.py || travis_terminate 1;
+      workspaces:
+        create:
+          name: coverage
+          paths:
+            - coverage.txt
 
     - script:
         - sonar-scanner || travis_terminate 1;
       name: "Testes de Qualidade e Seguranca"
+      workspaces:
+        use: coverage
       addons:
         sonarcloud:
           organization: kelwinmirandaa
           token: ${SONAR_TOKEN}
 
-    - stage: Deploy
+    - stage: STG Deploy
+      script: skip
+      # Definir o Deploy no Heroku
+      deploy:
+        provider: heroku
+        strategy: api
+        api_key: $HEROKU_API_KEY
+        edge: true
+        app: devopslab-kelwin-stg
+        on:
+          branch: main
+
+    - stage: STG TEST
+      script:
+        - curl -i https://devopslab-kelwin-stg.herokuapp.com/ | grep Pipeline || travis_terminate 1;
+
+    - stage: PROD Deploy
       script: skip
       # Definir o Deploy no Heroku
       deploy:
@@ -39,4 +62,13 @@ jobs:
         edge: true
         app: devopslab-kelwin
         on:
- 
+          branch: main
+
+    - stage: STG PROD
+      script:
+        - curl -i https://devopslab-kelwin.herokuapp.com/ | grep Pipeline || travis_terminate 1;
+# Slack
+#notifications:
+#  slack: COLOCAR TOKEN 
+#  on_success: always
+#  on_failure: always
